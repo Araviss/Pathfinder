@@ -15,13 +15,16 @@ class Grid:
 
 
     def updateStart(self,r,c):
-        self.gridArray[self.prevStartR][self.prevStartC] = None
+        self.gridArray[self.prevStartR][self.prevStartC] = 0
         self.gridArray[r][c] = "G"
+        self.prevStartR = r
+        self.prevStartC = c
+        print(self.gridArray)
 
     def updateEnd(self,r,c):
-        self.gridArray[self.prevEndR][self.prevEndC] = None
+        self.gridArray[self.prevEndR][self.prevEndC] = 0
         self.gridArray[r][c] = "P"
+        self.prevEndR = r
+        self.prevEndC = c
+        print(self.gridArray)
 
-
-    def updateGrid(self):
-        pass
