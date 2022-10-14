@@ -1,29 +1,61 @@
-import tkinter as tk
+from PyQt5.QtCore import Qt
 
-root = tk.Tk()
+from PyQt5.QtGui import QPalette, QPainter, QPen
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QMessageBox, QGridLayout, QLabel
 
-def cell_click(row, column):
-    pass
+from Grid import Grid
+
+app = QApplication([])
+app.setStyle('Fusion')
+window = QWidget()
+
+#Instantiating grid layout
+grid = QGridLayout()
+grid.setSpacing(0)
+g = Grid()
+print(g)
 
 
-def initiate_GUI():
-    for i in range(64):
-        root.columnconfigure(i, weight=1, minsize=10)
-        root.rowconfigure(i, weight=1, minsize=15)
 
-        for j in range(30):
-            label = tk.Label(master=root,
-                             height=3,
-                             width=3,
-                             highlightthickness=1,
-                             highlightbackground="#aaddcc"
-                             )
-            label.grid(row=i, column=j)
-            # label.pack(fill=tk.BOTH)
-            label.bind("<Button-1>",
-                       lambda x, row=i, column=j: cell_click(row, column))
+def tell_me(r, c,gr,b):
+    gridElem = gr.itemAtPosition(r,c).widget()
+    if(g.click):
+        gridElem.setStyleSheet("background-color: green")
+        g.click = False
+        if (g.prevStartR >= 0):
+            gr.itemAtPosition(g.prevStartR, g.prevStartC).widget().setStyleSheet("background-color: white")
+        g.prevStartR = r
+        g.prevStartC = c
+    else:
+        gridElem.setStyleSheet("background-color: purple")
+        g.click = True
+        if (g.prevEndR >= 0):
+            gr.itemAtPosition(g.prevEndR, g.prevEndC).widget().setStyleSheet("background-color: white")
+        g.prevEndR = r
+        g.prevEndC = c
 
-    root.mainloop()
 
-initiate_GUI()
+    print(r,c)
 
+
+def set_grid():
+    for i in range(0, g.columns+1):
+        for j in range(0,g.rows +1):
+            button = QPushButton()
+            button.resize(38, 21)
+            button.setStyleSheet(("border: 1px solid black;"))
+            button.setFixedHeight(100)
+            button.setFixedHeight(38)
+            grid.addWidget(button,i,j)
+            button.clicked.connect(lambda _, r=i, c=j: tell_me(r, c, grid,button))
+
+
+
+
+window.setLayout((grid))
+set_grid()
+window.show()
+app.exec()
+
+#Set alternating Goal and endpoint
+#resize grid when window expands
