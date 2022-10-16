@@ -34,9 +34,13 @@ def tell_me(r, c,gr,b):
         if (g.prevEndR >= 0):
             gr.itemAtPosition(g.prevEndR, g.prevEndC).widget().setStyleSheet("background-color: white")
         g.updateEnd(r,c)
-
-
     print(r,c)
+
+
+def drag_update(r, c,gr,b):
+    gridElem = gr.itemAtPosition(r,c).widget()
+    gridElem.setStyleSheet("background-color: red")
+
 
 #This sets up the grid and events for cell
 def set_grid():
@@ -48,7 +52,10 @@ def set_grid():
             button.setFixedHeight(100)
             button.setFixedHeight(38)
             grid.addWidget(button,i,j)
-            button.clicked.connect(lambda _, r=i, c=j: tell_me(r, c, grid,button))
+            button.clickPressSignal.connect(lambda event, r=i, c=j: drag_update(r, c, grid, button))
+            button.mousePressSignal.connect(lambda event, r=i, c=j: tell_me(r, c, grid,button))
+
+
 
 
 
