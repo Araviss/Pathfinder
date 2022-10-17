@@ -37,15 +37,23 @@ def tell_me(r, c,gr,b):
     print(r,c)
 
 
-def drag_update(r, c,gr,b):
-    gridElem = gr.itemAtPosition(r,c).widget()
+def drag_update(r, c,grid,b):
+    gridElem = grid.itemAtPosition(r,c).widget()
     gridElem.setStyleSheet("background-color: red")
 
 
 #This sets up the grid and events for cell
+def move_update(r, c, grid, button):
+    gridElem = grid.itemAtPosition(r, c).widget()
+    gridElem.setStyleSheet("background-color: red")
+    g.gridArray[r][c] = "x"
+    for e in g.gridArray:
+        print("".join(map(str,e)))
+
+
 def set_grid():
-    for i in range(0, g.columns+1):
-        for j in range(0,g.rows +1):
+    for i in range(0, g.rows+1):
+        for j in range(0,g.columns +1):
             button = MyQPushButton()
             button.resize(38, 21)
             button.setStyleSheet(("border: 1px solid black;"))
@@ -54,6 +62,7 @@ def set_grid():
             grid.addWidget(button,i,j)
             button.clickPressSignal.connect(lambda event, r=i, c=j: drag_update(r, c, grid, button))
             button.mousePressSignal.connect(lambda event, r=i, c=j: tell_me(r, c, grid,button))
+            button.enterSignal.connect(lambda event, r=i, c=j: move_update(r, c, grid,button))
 
 
 

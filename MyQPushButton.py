@@ -1,11 +1,12 @@
 from PyQt5 import Qt, QtCore, QtWidgets, QtGui
-from PyQt5.QtGui import QMouseEvent
+from PyQt5.QtGui import QMouseEvent, QEnterEvent
 from PyQt5.QtWidgets import QPushButton
 
 #Overrides the QPushButton widget to be able to hover
 class MyQPushButton(QPushButton):
     mousePressSignal = QtCore.pyqtSignal(QMouseEvent)
     clickPressSignal = QtCore.pyqtSignal(QMouseEvent)
+    enterSignal = QtCore.pyqtSignal(QEnterEvent)
     dragstart = False
 
     def __init__(self, parent=None):
@@ -14,15 +15,11 @@ class MyQPushButton(QPushButton):
         self.setMouseTracking(False)
 
 
-#Only activates when something already clicked
+#Detects which cell has been entered into
     def enterEvent(self, event):
         if(MyQPushButton.dragstart):
-            self.setText('hovering')
+            self.enterSignal.emit(event)
 
-
-
-    def mouseMoveEvent(self, event):
-        self.setStyleSheet("background-color: orange")
 
 
     def mousePressEvent(self, QMouseEvent):

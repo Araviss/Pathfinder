@@ -2,16 +2,17 @@ from PyQt5.QtWidgets import QWidget
 
 
 class Grid:
-    columns = 20
-    rows = 20
-    gridArray = [[0] * columns] * rows
-    def __init__(self):
 
+
+    def __init__(self):
+        self.columns = 20
+        self.rows = 20
         self.click = True
         self.prevStartR =-1
         self.prevStartC = -1
         self.prevEndR = -1
         self.prevEndC = -1
+        self.gridArray = [[0 for i in range(self.rows)] for j in range(self.columns)]
 
 
     def updateStart(self,r,c):
@@ -27,4 +28,6 @@ class Grid:
         self.prevEndR = r
         self.prevEndC = c
         print(self.gridArray)
+
+
 
