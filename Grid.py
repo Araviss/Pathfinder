@@ -17,14 +17,14 @@ class Grid:
 
     def updateStart(self,r,c):
         self.gridArray[self.prevStartR][self.prevStartC] = 0
-        self.gridArray[r][c] = "G"
+        self.gridArray[r][c] = "S"
         self.prevStartR = r
         self.prevStartC = c
         print(self.gridArray)
 
     def updateEnd(self,r,c):
         self.gridArray[self.prevEndR][self.prevEndC] = 0
-        self.gridArray[r][c] = "P"
+        self.gridArray[r][c] = "G"
         self.prevEndR = r
         self.prevEndC = c
         print(self.gridArray)

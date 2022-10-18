@@ -59,7 +59,7 @@ class Search():
             for dir in self.directions:
                 nr, nc = coord[0] + dir[0], coord[1] + dir[1]
                 x = (nr, nc)
-                if (nr < 0 or nr >= self.R or nc < 0 or nc >= self.C or self.maze[nr][nc] == "%" or visited[nr][nc]): continue
+                if (nr < 0 or nr >= self.R or nc < 0 or nc >= self.C or self.maze[nr][nc] == "X" or visited[nr][nc]): continue
                 h = calc_dist(x, self.end)
                 g = calc_dist(x, self.start)
                 f = h + g
@@ -100,7 +100,7 @@ class Search():
             for dir in self.directions:
                 nr, nc = coord[0] + dir[0], coord[1] + dir[1]
                 x = (nr, nc)
-                if (nr < 0 or nr >= self.R or nc < 0 or nc >= self.C or self.maze[nr][nc] == "%" or visited[nr][nc]): continue
+                if (nr < 0 or nr >= self.R or nc < 0 or nc >= self.C or self.maze[nr][nc] == "X" or visited[nr][nc]): continue
                 z = calc_dist(x, self.end)
                 open.append((nr, nc, coord[2] + 1, z))
 
@@ -110,27 +110,28 @@ class Search():
 
         return "Unable to find Goal"
 
-    # How do i translate depth d from integer to coordinates
-
+    #Need to stop if there is no path
     def start_DFS_helper(self,maze, R, C, start, d):
-        queue = deque()
-        queue.append((start[0], start[1], 0))
+        try:
+            queue = deque()
+            queue.append((start[0], start[1], 0))
+            visited = [[False] * C for _ in range(R)]
 
-        visited = [[False] * C for _ in range(R)]
+            for _ in range(2 ** d):
+                coord = queue.pop()
+                visited[coord[0]][coord[1]] = True
+                # print(coord)
+                if maze[coord[0]][coord[1]] == "G":
+                    return ([coord[0]],[coord[1]]), 1
 
-        for _ in range(2 ** d):
-            coord = queue.pop()
-            visited[coord[0]][coord[1]] = True
-            # print(coord)
-            if maze[coord[0]][coord[1]] == "G":
-                return coord[2], True
-
-            for dir in self.directions:
-                nr, nc = coord[0] + dir[0], coord[1] + dir[1]
-                if (nr < 0 or nr >= R or nc < 0 or nc >= C or maze[nr][nc] == "%" or visited[nr][nc]): continue
-                queue.append((nr, nc, coord[2] + 1))
-
-        return "not found", False
+                for dir in self.directions:
+                    nr, nc = coord[0] + dir[0], coord[1] + dir[1]
+                    if (nr < 0 or nr >= R or nc < 0 or nc >= C or maze[nr][nc] == "X" or visited[nr][nc]): continue
+                    queue.append((nr, nc, coord[2] + 1))
+        except:
+            print("bullshit")
+            return "not found ", -1
+        return "not found yet", 0
 
     def depth_first(self):
         stack = deque()
@@ -148,14 +149,14 @@ class Search():
 
             for dir in self.directions:
                 nr, nc = coord[0] + dir[0], coord[1] + dir[1]
-                if (nr < 0 or nr >= self.R or nc < 0 or nc >= self.C or self.maze[nr][nc] == "%" or visited[nr][nc]): continue
+                if (nr < 0 or nr >= self.R or nc < 0 or nc >= self.C or self.maze[nr][nc] == "X" or visited[nr][nc]): continue
                 stack.append((nr, nc, coord[2] + 1))
 
     def iterative(self):
         d = 1
-        found = False
+        found = 0
         coord = (0, 0)
-        while found == False:
+        while found == 0:
             coord, found = self.start_DFS_helper(self.maze, self.R, self.C, self.start, d)
             d += 1
             print(d)
@@ -163,4 +164,4 @@ class Search():
 
 
 
-    # Given a maze find the shortest path
+#Iterative

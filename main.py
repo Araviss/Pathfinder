@@ -27,6 +27,7 @@ grid.setSpacing(0)
 vbox.addLayout(hbox)
 vbox.addLayout(grid)
 
+
 g = Grid()
 s = Search.Search()
 print(g)
@@ -58,7 +59,7 @@ def tell_me(r, c,gr,b):
 
 def drag_update(r, c,grid,b):
     gridElem = grid.itemAtPosition(r,c).widget()
-    g.gridArray[r][c] = "x"
+    g.gridArray[r][c] = "X"
     gridElem.setStyleSheet("background-color: red")
 
 
@@ -66,7 +67,7 @@ def drag_update(r, c,grid,b):
 def move_update(r, c, grid, button):
     gridElem = grid.itemAtPosition(r, c).widget()
     gridElem.setStyleSheet("background-color: red")
-    g.gridArray[r][c] = "x"
+    g.gridArray[r][c] = "X"
     s.maze = g.gridArray
     for e in s.maze:
         print("".join(map(str,e)))
@@ -74,10 +75,11 @@ def move_update(r, c, grid, button):
 
 def start_search():
     s.iterative()
+    print("Bitch")
 
 def set_grid():
-    for i in range(0, g.rows+1):
-        for j in range(0,g.columns +1):
+    for i in range(0, g.rows-1):
+        for j in range(0,g.columns -1):
             button = MyQPushButton()
             button.resize(38, 21)
             button.setStyleSheet(("border: 1px solid black;"))
@@ -87,7 +89,7 @@ def set_grid():
             button.clickPressSignal.connect(lambda event, r=i, c=j: drag_update(r, c, grid, button))
             button.mousePressSignal.connect(lambda event, r=i, c=j: tell_me(r, c, grid,button))
             button.enterSignal.connect(lambda event, r=i, c=j: move_update(r, c, grid,button))
-            startButton.clicked.connect(start_search)
+
         s.R = g.rows
         s.C = g.columns
 
@@ -95,7 +97,7 @@ def set_grid():
 
 
 
-
+startButton.clicked.connect(lambda event: start_search())
 window.setLayout((vbox))
 set_grid()
 
