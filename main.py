@@ -1,3 +1,5 @@
+from time import sleep, time
+
 from PyQt5.QtCore import Qt
 
 from PyQt5.QtGui import QPalette, QPainter, QPen
@@ -56,7 +58,7 @@ def tell_me(r, c,gr,b):
     #updates the maze in Algorithm file
     s.maze = g.gridArray
 
-
+#Updates start coloring cell red on first right click
 def drag_update(r, c,grid,b):
     gridElem = grid.itemAtPosition(r,c).widget()
     g.gridArray[r][c] = "X"
@@ -72,24 +74,40 @@ def move_update(r, c, grid, button):
     for e in s.maze:
         print("".join(map(str,e)))
 
+# Use this method to animate the cells sequentially
+#This way we don't have to delay processing
+#Instead we can have animation slowed down
+def set_style(gridElem):
+    QApplication.processEvents()
+    gridElem.setStyleSheet("background-color: blue")
+    print("set color")
+
+
 
 def start_search():
-    s.iterative()
-    print("Bitch")
+    s.depth_first()
+    while(s.fifo):
+        cell = s.fifo.popleft()
+        gridElem = grid.itemAtPosition(cell[0], cell[1])
+        if gridElem != None:
+            set_style(gridElem.widget())
 
+
+# Sets up grid configuration and sets signals
+# Must iterate through each grid coordinate to add
+# and configure button
 def set_grid():
     for i in range(0, g.rows-1):
         for j in range(0,g.columns -1):
             button = MyQPushButton()
             button.resize(38, 21)
             button.setStyleSheet(("border: 1px solid black;"))
-            button.setFixedHeight(100)
             button.setFixedHeight(38)
             grid.addWidget(button,i,j)
+
             button.clickPressSignal.connect(lambda event, r=i, c=j: drag_update(r, c, grid, button))
             button.mousePressSignal.connect(lambda event, r=i, c=j: tell_me(r, c, grid,button))
             button.enterSignal.connect(lambda event, r=i, c=j: move_update(r, c, grid,button))
-
         s.R = g.rows
         s.C = g.columns
 
@@ -106,5 +124,5 @@ window.show()
 app.exec()
 
 #resize grid when window expands
-#Get Algorithm to take grid
-#Get UI to show algorithm in play
+#Get UI to show all algorithms in play
+#Set Animations

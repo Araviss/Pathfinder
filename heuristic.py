@@ -1,8 +1,12 @@
 from math import dist
 
 
-class Euclidean_Dist:
+class Heuristics:
 
-    def calc_dist( x,y):
-        d = dist(x,y)
+    def calc_euclidean(self, x, y):
+        d = dist(x, y)
+        return d
+
+    def calc_manhattan(self, x, y):
+        d = sum(abs(val1 - val2) for val1, val2 in zip(x, y))
         return d
