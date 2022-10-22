@@ -17,6 +17,22 @@ class Search():
         self.fifo = deque()
         self.heuristic = heuristic.Heuristics()
 
+    def get_start(self):
+        return self.start
+
+
+    def get_end(self):
+        return self.end
+
+
+    def set_start(self, start):
+        self.start = start
+
+
+    def set_end(self, end):
+        self.end = end
+
+
 
     # Currently uses the euclidean formula to calculate the
     # distance between the beginning and end points
@@ -63,8 +79,8 @@ class Search():
                         or visited[nr][nc]):
                     continue
 
-                h = self.heuristic.calc_euclidean(x, self.end)
-                g = self.heuristic.calc_euclidean(x, self.start)
+                h = self.heuristic.calc_manhattan(x, self.end)
+                g = self.heuristic.calc_manhattan(x, self.start)
                 f = h + g
                 open.append((nr, nc, coord[2] + 1, f))
 

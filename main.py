@@ -4,9 +4,10 @@ from PyQt5.QtCore import Qt
 
 from PyQt5.QtGui import QPalette, QPainter, QPen
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QMessageBox, QGridLayout, QLabel, \
-    QHBoxLayout
+    QHBoxLayout, QComboBox
 
 import Search
+from  Search import Search as sh
 from Grid import Grid
 from MyQPushButton import MyQPushButton
 
@@ -14,25 +15,11 @@ app = QApplication([])
 app.setStyle('Fusion')
 window = QWidget()
 
-#Instantiating grid layout
-vbox = QVBoxLayout()
-vbox.addStretch(1)
 
-hbox = QHBoxLayout()
-hbox.addStretch(1)
-startButton = QPushButton()
-startButton.setText("Refresh")
-hbox.addWidget(startButton)
-
-grid = QGridLayout()
-grid.setSpacing(0)
-vbox.addLayout(hbox)
-vbox.addLayout(grid)
 
 
 g = Grid()
 s = Search.Search()
-print(g)
 
 
 
@@ -45,16 +32,14 @@ def tell_me(r, c,gr,b):
         if (g.prevStartR >= 0):
             gr.itemAtPosition(g.prevStartR, g.prevStartC).widget().setStyleSheet("background-color: white")
         g.updateStart(r,c)
-        s.start = (r,c)
-        print(s.start)
+        s.set_start((r,c))
     else:
         gridElem.setStyleSheet("background-color: purple")
         g.click = True
         if (g.prevEndR >= 0):
             gr.itemAtPosition(g.prevEndR, g.prevEndC).widget().setStyleSheet("background-color: white")
         g.updateEnd(r,c)
-        s.end = (r,c)
-        print(s.end)
+        s.set_end((r,c))
     #updates the maze in Algorithm file
     s.maze = g.gridArray
 
@@ -80,17 +65,46 @@ def move_update(r, c, grid, button):
 def set_style(gridElem):
     QApplication.processEvents()
     gridElem.setStyleSheet("background-color: blue")
-    print("set color")
+
+# Clear grid when Algorithm Changed
+def clear_grid():
+    print(sh.get_end(), "The end")
+    for i in range(0, 20):
+        print(sh.get_start()," The start")
+        for j in range(0, 20):
 
 
+            if((i,j) != sh.get_end() and (i,j) != sh.get_start() ):
+                gridElem = grid.itemAtPosition(i, j).widget()
+                QApplication.processEvents()
+                gridElem.setStyleSheet("background-color: light gray")
 
-def start_search():
-    s.depth_first()
-    while(s.fifo):
+
+# Colors the path the algorithm searched
+def color_path():
+    while (s.fifo):
         cell = s.fifo.popleft()
         gridElem = grid.itemAtPosition(cell[0], cell[1])
         if gridElem != None:
             set_style(gridElem.widget())
+
+
+# Determines which algorithm in the combBox was chosen
+def start_search():
+    try:
+        clear_grid()
+    except:
+        print("No path has been searched")
+    finally:
+        if comboBox.currentIndex() == 0:
+            s.astar()
+        elif comboBox.currentIndex() == 1:
+            s.depth_first()
+        elif comboBox.currentIndex() == 2:
+            s.greedy()
+        elif comboBox.currentIndex() == 3:
+            s.iterative()
+        color_path()
 
 
 # Sets up grid configuration and sets signals
@@ -111,7 +125,28 @@ def set_grid():
         s.R = g.rows
         s.C = g.columns
 
+#Instantiating grid layout
+comboBox = QComboBox()
+comboBox.addItem('A*')
+comboBox.addItem('Depth')
+comboBox.addItem('Greedy ')
+comboBox.addItem('Iterative')
+comboBox.currentIndexChanged.connect(start_search)
 
+vbox = QVBoxLayout()
+vbox.addStretch(1)
+
+hbox = QHBoxLayout()
+hbox.addStretch(1)
+startButton = QPushButton()
+startButton.setText("Start")
+hbox.addWidget(startButton)
+hbox.addWidget(comboBox)
+
+grid = QGridLayout()
+grid.setSpacing(0)
+vbox.addLayout(hbox)
+vbox.addLayout(grid)
 
 
 
@@ -123,6 +158,9 @@ set_grid()
 window.show()
 app.exec()
 
+
+
+# TO DO LIST
 #resize grid when window expands
-#Get UI to show all algorithms in play
+#GET COMBO Item to properly select the algorithm you want to use
 #Set Animations
