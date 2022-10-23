@@ -16,7 +16,7 @@ s = Search.Search()
 
 
 
-def tell_me(r, c,gr,b):
+def set_endpoints(r, c,gr,b):
     gridElem = gr.itemAtPosition(r,c).widget()
    #Helps to alternate between End and Beginning
     if(g.click):
@@ -26,6 +26,7 @@ def tell_me(r, c,gr,b):
             gr.itemAtPosition(g.prevStartR, g.prevStartC).widget().setStyleSheet("background-color: white")
         g.updateStart(r,c)
         s.set_start((r,c))
+        print(s.get_start())
     else:
         gridElem.setStyleSheet("background-color: purple")
         g.click = True
@@ -33,6 +34,7 @@ def tell_me(r, c,gr,b):
             gr.itemAtPosition(g.prevEndR, g.prevEndC).widget().setStyleSheet("background-color: white")
         g.updateEnd(r,c)
         s.set_end((r,c))
+        print(s.get_end())
     #updates the maze in Algorithm file
     s.maze = g.gridArray
 
@@ -54,12 +56,21 @@ def move_update(r, c, grid, button):
         print("".join(map(str,e)))
 
 
-
-
+def clear_grid():
+    end = s.get_end()
+    start = s.get_start()
+    for i in range(0, g.rows - 1):
+        for j in range(0, g.columns - 1):
+                g.gridArray[i][j] = 0
+                gridElem = grid.itemAtPosition(i, j).widget()
+                QApplication.processEvents()
+                gridElem.setStyleSheet("background-color: light gray")
+    s.set_end((0, 0))
+    s.set_start((0, 0))
 # Clear grid when Algorithm Changed.
 # The "if" Operator makes sure that it doesn't clear the
 # start, end, or wall
-def clear_grid():
+def clear_color_path():
     end = s.get_end()
     start = s.get_start()
     for i in range(0, g.rows - 1):
@@ -72,6 +83,9 @@ def clear_grid():
                 gridElem.setStyleSheet("background-color: light gray")
 
 
+
+
+
 # Use this method to animate the cells sequentially
 #This way we don't have to delay processing
 #Instead we can have animation slowed down
@@ -79,8 +93,10 @@ def color_path():
     while (s.fifo):
         cell = s.fifo.popleft()
         gridElem = grid.itemAtPosition(cell[0], cell[1])
-        if gridElem != None and (cell[0],cell[1]) != (s.get_end()
-            or s.get_start()):
+        if gridElem != None and (cell[0],cell[1]) != s.get_end() \
+                and (cell[0],cell[1]) != s.get_start():
+            print(s.get_start())
+            print(s.get_end())
             QApplication.processEvents()
             gridElem.widget().setStyleSheet("background-color: turquoise")
 
@@ -90,13 +106,13 @@ def start_search():
     if comboBox.currentIndex() == 0:
         s.astar()
     elif comboBox.currentIndex() == 1:
-        clear_grid()
+        clear_color_path()
         s.depth_first()
     elif comboBox.currentIndex() == 2:
-        clear_grid()
+        clear_color_path()
         s.greedy()
     elif comboBox.currentIndex() == 3:
-        clear_grid()
+        clear_color_path()
         s.iterative()
     color_path()
 
@@ -115,7 +131,7 @@ def set_grid():
             grid.addWidget(button,i,j)
 
             button.clickPressSignal.connect(lambda event, r=i, c=j: drag_update(r, c, grid, button))
-            button.mousePressSignal.connect(lambda event, r=i, c=j: tell_me(r, c, grid,button))
+            button.mousePressSignal.connect(lambda event, r=i, c=j: set_endpoints(r, c, grid,button))
             button.enterSignal.connect(lambda event, r=i, c=j: move_update(r, c, grid,button))
         s.R = g.rows
         s.C = g.columns
@@ -135,8 +151,11 @@ hbox = QHBoxLayout()
 hbox.addStretch(1)
 startButton = QPushButton()
 startButton.setText("Start")
+clearButton = QPushButton()
+clearButton.setText("Clear Grid")
 hbox.addWidget(startButton)
 hbox.addWidget(comboBox)
+hbox.addWidget((clearButton))
 
 grid = QGridLayout()
 grid.setSpacing(0)
@@ -144,7 +163,7 @@ vbox.addLayout(hbox)
 vbox.addLayout(grid)
 
 
-
+clearButton.clicked.connect(lambda event: clear_grid())
 startButton.clicked.connect(lambda event: start_search())
 window.setLayout((vbox))
 set_grid()
