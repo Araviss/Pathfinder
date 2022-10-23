@@ -15,6 +15,10 @@ class Grid:
         self.gridArray = [[0 for i in range(self.rows)] for j in range(self.columns)]
 
 
+
+
+
+
     def updateStart(self,r,c):
         self.gridArray[self.prevStartR][self.prevStartC] = 0
         self.gridArray[r][c] = "S"

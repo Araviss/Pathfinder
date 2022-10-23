@@ -16,6 +16,11 @@ class Search():
         self.start = ()
         self.fifo = deque()
         self.heuristic = heuristic.Heuristics()
+        self.wallList = []
+
+
+    def get_wall_list(self):
+        return self.wallList
 
     def get_start(self):
         return self.start
@@ -24,6 +29,8 @@ class Search():
     def get_end(self):
         return self.end
 
+    def updateWall(self, r, c):
+        self.wallList.append((r,c))
 
     def set_start(self, start):
         self.start = start
@@ -86,6 +93,7 @@ class Search():
 
                 if self.maze[nr][nc] == "G":
                     print(nr, nc)
+                    self.fifo.pop()
                     return coord[2]
                 self.fifo.append((nr,nc))
 
@@ -126,6 +134,7 @@ class Search():
 
                 if self.maze[nr][nc] == "G":
                     print(nr, nc)
+                    self.fifo.pop()
                     return coord[2]
                 self.fifo.append((nr,nc))
 

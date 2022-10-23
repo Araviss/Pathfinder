@@ -1,13 +1,6 @@
-from time import sleep, time
-
-from PyQt5.QtCore import Qt
-
-from PyQt5.QtGui import QPalette, QPainter, QPen
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QMessageBox, QGridLayout, QLabel, \
     QHBoxLayout, QComboBox
-
 import Search
-from  Search import Search as sh
 from Grid import Grid
 from MyQPushButton import MyQPushButton
 
@@ -36,7 +29,7 @@ def tell_me(r, c,gr,b):
     else:
         gridElem.setStyleSheet("background-color: purple")
         g.click = True
-        if (g.prevEndR >= 0):
+        if (g.prevEndR >= 0 ):
             gr.itemAtPosition(g.prevEndR, g.prevEndC).widget().setStyleSheet("background-color: white")
         g.updateEnd(r,c)
         s.set_end((r,c))
@@ -55,56 +48,57 @@ def move_update(r, c, grid, button):
     gridElem = grid.itemAtPosition(r, c).widget()
     gridElem.setStyleSheet("background-color: red")
     g.gridArray[r][c] = "X"
+    s.wallList.append((r,c))
     s.maze = g.gridArray
     for e in s.maze:
         print("".join(map(str,e)))
 
-# Use this method to animate the cells sequentially
-#This way we don't have to delay processing
-#Instead we can have animation slowed down
-def set_style(gridElem):
-    QApplication.processEvents()
-    gridElem.setStyleSheet("background-color: blue")
 
-# Clear grid when Algorithm Changed
+
+
+# Clear grid when Algorithm Changed.
+# The "if" Operator makes sure that it doesn't clear the
+# start, end, or wall
 def clear_grid():
-    print(sh.get_end(), "The end")
-    for i in range(0, 20):
-        print(sh.get_start()," The start")
-        for j in range(0, 20):
-
-
-            if((i,j) != sh.get_end() and (i,j) != sh.get_start() ):
+    end = s.get_end()
+    start = s.get_start()
+    for i in range(0, g.rows - 1):
+        for j in range(0, g.columns - 1):
+            if((i,j) != end
+                    and (i,j) != start
+                    and (i,j)  not in s.wallList):
                 gridElem = grid.itemAtPosition(i, j).widget()
                 QApplication.processEvents()
                 gridElem.setStyleSheet("background-color: light gray")
 
 
-# Colors the path the algorithm searched
+# Use this method to animate the cells sequentially
+#This way we don't have to delay processing
+#Instead we can have animation slowed down
 def color_path():
     while (s.fifo):
         cell = s.fifo.popleft()
         gridElem = grid.itemAtPosition(cell[0], cell[1])
-        if gridElem != None:
-            set_style(gridElem.widget())
+        if gridElem != None and (cell[0],cell[1]) != (s.get_end()
+            or s.get_start()):
+            QApplication.processEvents()
+            gridElem.widget().setStyleSheet("background-color: turquoise")
 
 
 # Determines which algorithm in the combBox was chosen
 def start_search():
-    try:
+    if comboBox.currentIndex() == 0:
+        s.astar()
+    elif comboBox.currentIndex() == 1:
         clear_grid()
-    except:
-        print("No path has been searched")
-    finally:
-        if comboBox.currentIndex() == 0:
-            s.astar()
-        elif comboBox.currentIndex() == 1:
-            s.depth_first()
-        elif comboBox.currentIndex() == 2:
-            s.greedy()
-        elif comboBox.currentIndex() == 3:
-            s.iterative()
-        color_path()
+        s.depth_first()
+    elif comboBox.currentIndex() == 2:
+        clear_grid()
+        s.greedy()
+    elif comboBox.currentIndex() == 3:
+        clear_grid()
+        s.iterative()
+    color_path()
 
 
 # Sets up grid configuration and sets signals
@@ -117,6 +111,7 @@ def set_grid():
             button.resize(38, 21)
             button.setStyleSheet(("border: 1px solid black;"))
             button.setFixedHeight(38)
+            button.setStyleSheet("background-color: light gray")
             grid.addWidget(button,i,j)
 
             button.clickPressSignal.connect(lambda event, r=i, c=j: drag_update(r, c, grid, button))
@@ -162,5 +157,4 @@ app.exec()
 
 # TO DO LIST
 #resize grid when window expands
-#GET COMBO Item to properly select the algorithm you want to use
 #Set Animations
